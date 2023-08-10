@@ -4,31 +4,37 @@ import SearchBox from "./SearchBox.js";
 import { robots } from "./robots.js";
 import Scroll from "./Scroll.js";
 import ErrorBoundry from "./ErrorBoundry.js"
+import { setSearchField } from "./actions.js";
+import { connect } from "react-redux";
 
+const mapStateToProps = state => {
+    return {
+        searchField: state.searchField
+    }
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        onSearchChange: (event) => dispatch(setSearchField(event.target.value))
+    }
+}
 
 class App extends React.Component{
     constructor () {
         super()
         this.state = { 
-            robots,
-            searchfield: ""
+            robots
         }
-    }
-
-    onSearchChange = (event) => {
-        this.setState({ searchfield: event.target.value})
-
     }
 
     render () {
         const filteredRobots = this.state.robots.filter(robot => {
-            return robot.name.toLowerCase().includes(this.state.searchfield.toLowerCase())
-        });
-        console.log(filteredRobots);
+            return robot.name.toLowerCase().includes(this.props.searchField.toLowerCase())
+        })
         return(
             <>
                 <h1>Robo Friends</h1>
-                <div className="centered"><SearchBox searchChange={this.onSearchChange}/></div>
+                <div className="centered"><SearchBox searchChange={this.props.onSearchChange}/></div>
                 <hr />
                 <Scroll>
                     <ErrorBoundry>
@@ -40,4 +46,4 @@ class App extends React.Component{
     }
 }
 
-export default App;
+export default connect(mapStateToProps, mapDispatchToProps)(App);
